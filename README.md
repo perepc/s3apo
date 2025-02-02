@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# S3 File Uploader As Public Object (s3apo)
 
-## Getting Started
+<p align="center">
+  <img src="public/sapo.png" alt="S3APO Logo"/>
+</p>
 
-First, run the development server:
+## Description
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This application allows users to upload files to an Amazon S3 bucket and make them publicly accessible. It provides a user-friendly interface for entering AWS credentials, selecting files, and monitoring the upload status. The application is built using React and utilizes the AWS SDK for JavaScript to interact with S3.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- User authentication via AWS credentials (Access Key, Secret Key).
+- File selection for multiple uploads.
+- Real-time upload status updates.
+- Public access to uploaded files (outputs public url for each file).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Prerequisites
 
-## Learn More
+Before using this application, ensure you have the following:
 
-To learn more about Next.js, take a look at the following resources:
+- An AWS account.
+- An S3 bucket created in your AWS account.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## S3 Bucket Configuration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+To successfully upload files to your S3 bucket, you need to configure the bucket with the following settings:
 
-## Deploy on Vercel
+1. **Bucket Policy**: Ensure your bucket policy allows public access if you want the uploaded files to be publicly accessible. Here is an example policy:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Sid": "PublicReadGetObject",
+         "Effect": "Allow",
+         "Principal": "*",
+         "Action": "s3:GetObject",
+         "Resource": "arn:aws:s3:::your-bucket-name/*"
+       }
+     ]
+   }
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   Replace `your-bucket-name` with the actual name of your bucket.
+
+2. **CORS Configuration**: Set up CORS (Cross-Origin Resource Sharing) to allow your application to interact with the S3 bucket. Here is an example CORS configuration:
+
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <CORSConfiguration>
+       <CORSRule>
+           <AllowedOrigin>https://your-domain.com</AllowedOrigin>
+           <AllowedMethod>GET</AllowedMethod>
+           <AllowedMethod>PUT</AllowedMethod>
+           <AllowedMethod>POST</AllowedMethod>
+           <AllowedMethod>DELETE</AllowedMethod>
+           <AllowedHeader>*</AllowedHeader>
+       </CORSRule>
+   </CORSConfiguration>
+   ```
+
+   Replace `https://your-domain.com` with your domain name or `*` to allow all domains.
+
+3. **IAM User Permissions**: Create an IAM user with permissions to access the S3 bucket. Attach the following policy to the user:
+
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": [
+           "s3:PutObject",
+           "s3:GetObject",
+           "s3:ListBucket"
+         ],
+         "Resource": [
+           "arn:aws:s3:::your-bucket-name",
+           "arn:aws:s3:::your-bucket-name/*"
+         ]
+       }
+     ]
+   }
+   ```
+
+   Again, replace `your-bucket-name` with the actual name of your bucket.
+
+## Usage
+
+1. Clone the repository.
+2. Install the dependencies using `npm install`.
+3. Run the application using `npm start`.
+4. Enter your AWS credentials and bucket information in the provided fields.
+5. Select the files you want to upload and click the "Upload Files" button.
+6. The application will display the public URL for each uploaded file.
+
+Feel free to use this application as a template to build your own application or to use it as a component for your own projects.
+
+## License
+
+This project is licensed under the MIT License.
