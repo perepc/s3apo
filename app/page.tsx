@@ -1,6 +1,7 @@
 'use client'
 import { useState, ChangeEvent, FormEvent } from "react";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import Image from 'next/image';
 
 const AWS_REGIONS = [
   { value: 'eu-west-1', label: 'Europe (Ireland)' },
@@ -82,9 +83,7 @@ export default function Home() {
         }]);
         
         const fileBuffer = await file.arrayBuffer();
-        const totalSize = fileBuffer.byteLength;
-        let uploadedSize = 0;
-
+        
         const command = new PutObjectCommand({
           Bucket: credentials.bucketName,
           Key: file.name,
@@ -106,10 +105,11 @@ export default function Home() {
           }
         ]);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
       console.error('Error uploading files:', error);
       setUploadStatus(prev => [...prev, { 
-        message: `Error: ${error.message || JSON.stringify(error)}`,
+        message: `Error: ${errorMessage}`,
         isError: true,
         fileName: 'error'
       }]);
@@ -149,10 +149,14 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
       <div className="w-full max-w-5xl">
-        <img 
+        <Image 
           src="/sapo.png" 
           alt="Application header"
+          width={0}
+          height={0}
+          sizes="100vw"
           className="w-auto h-auto rounded-lg shadow-lg mb-8"
+          priority
         />
         <h1 className="text-2xl font-bold mb-6">Upload files to AWS S3 As Public Objects (s3apo)</h1>
         
@@ -241,8 +245,8 @@ export default function Home() {
                 </div>
                 {files.length > 0 && (
                   <ul className="text-sm text-gray-500 space-y-1">
-                    {files.map((file, index) => (
-                      <li key={index}>{file.name}</li>
+                    {files.map((file) => (
+                      <li key={file.name}>{file.name}</li>
                     ))}
                   </ul>
                 )}
@@ -266,7 +270,7 @@ export default function Home() {
             <div>
               <h2 className="text-xl font-bold mb-2">Upload Status:</h2>
               <ul className="space-y-2">
-                {uploadStatus.map((status, index) => (
+                {uploadStatus.map((status) => (
                   <li 
                     key={status.fileName} 
                     className={`p-2 rounded border ${
