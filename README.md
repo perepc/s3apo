@@ -1,19 +1,23 @@
 # S3 File Uploader As Public Object (s3apo)
 
 <p align="center">
-  <img src="public/sapo.png" alt="S3APO Logo"/>
+  <img src="public/sapo.png" alt="s3apo Logo"/>
 </p>
 
 ## Description
 
 This application allows users to upload files to an Amazon S3 bucket and make them publicly accessible. It provides a user-friendly interface for entering AWS credentials, selecting files, and monitoring the upload status. The application is built using React and utilizes the AWS SDK for JavaScript to interact with S3.
 
+### Context
+
+My wife needed to upload files to an S3 bucket and make them publicly accessible. As she is not a developer, I thought it would be a good idea to create an application that would allow her to do that easily. So I created s3apo. "Sapo" is the spanish word for "toad".
+
 ### Features
 
 - User authentication via AWS credentials (Access Key, Secret Key).
 - File selection for multiple uploads.
 - Real-time upload status updates.
-- Public access to uploaded files (outputs public url for each file).
+- Sets public access to uploaded files (outputs public url for each file).
 
 ## Prerequisites
 
@@ -73,6 +77,7 @@ To successfully upload files to your S3 bucket, you need to configure the bucket
          "Effect": "Allow",
          "Action": [
            "s3:PutObject",
+           "s3:PutObjectAcl",
            "s3:GetObject",
            "s3:ListBucket"
          ],
